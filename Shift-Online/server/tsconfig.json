@@ -4,9 +4,10 @@
     "module": "commonjs",
     "strict": true,
     "esModuleInterop": true,
+    "resolveJsonModule": true,
     "outDir": "dist",
     "rootDir": "."
   },
-  "include": ["**/*.ts"],
+  "include": ["**/*.ts", "db/init.js"],
   "exclude": ["node_modules"]
 }
