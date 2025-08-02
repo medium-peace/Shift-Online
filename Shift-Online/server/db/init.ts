@@ -10,7 +10,7 @@ db.exec(`
     role TEXT NOT NULL,
     contact TEXT
   );
-  
+
   CREATE TABLE IF NOT EXISTS shifts (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     userId INTEGER NOT NULL,
@@ -21,4 +21,14 @@ db.exec(`
   );
 `);
 
+// ここを修正：prepareでステートメントを作ってからrunを呼ぶ
+const insert = db.prepare(`
+  INSERT INTO users (username, password, role)
+  VALUES (?, ?, ?)
+`);
+
+// 例としてadminユーザーを挿入
+insert.run('admin', 'adminpass', 'admin');
+
 console.log('Tables initialized.');
+
