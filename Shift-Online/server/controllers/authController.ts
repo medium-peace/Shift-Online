@@ -6,7 +6,7 @@ const users = [
   { id: 2, username: 'user1', password: 'userpass', role: 'member' },
 ];
 
-const JWT_SECRET = process.env.JWT_SECRET || 'default_secret';
+const JWT_SECRET = process.env.JWT_SECRET!;
 
 export const login = (req: Request, res: Response) => {
   const { username, password } = req.body;
