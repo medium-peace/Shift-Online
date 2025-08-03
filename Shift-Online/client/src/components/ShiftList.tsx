@@ -1,38 +1,44 @@
-// src/components/ShiftList.tsx
-import { useEffect, useState } from 'react';
-import { fetchShifts, deleteShift } from '../api/shiftApi';
+import React, { useEffect, useState } from 'react';
+import { fetchShifts } from '../api/shiftApi';
+import { Shift } from '../types/shift';
+import { User } from '../types/user';
 
-interface Shift {
-  id: number;
-  userId: number;
-  date: string;
-  startTime: string;
-  endTime: string;
+interface Props {
+  user: User;
 }
 
-export default function ShiftList() {
+const ShiftList: React.FC<Props> = ({ user }) => {
   const [shifts, setShifts] = useState<Shift[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchShifts().then(setShifts);
+    const loadShifts = async () => {
+      try {
+        const data = await fetchShifts(); // ユーザーごとの判定はサーバーが行うので、特にuser.idを渡す必要はない
+        setShifts(data);
+      } catch (err) {
+        setError('シフトの取得に失敗しました');
+        console.error(err);
+      }
+    };
+    loadShifts();
   }, []);
-
-  const handleDelete = async (id: number) => {
-    await deleteShift(id);
-    setShifts(shifts.filter((s) => s.id !== id));
-  };
 
   return (
     <div>
-      <h2>シフト一覧</h2>
+      <h2>登録済みシフト一覧</h2>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
       <ul>
         {shifts.map((shift) => (
           <li key={shift.id}>
-            {shift.date} {shift.startTime}-{shift.endTime}
-            <button onClick={() => handleDelete(shift.id)}>削除</button>
+            {shift.date} | {shift.startTime} - {shift.endTime}
+            {user.role === 'admin' && ` (登録者: ${shift.userName})`}
           </li>
         ))}
       </ul>
     </div>
   );
-}
+};
+
+export default ShiftList;
+

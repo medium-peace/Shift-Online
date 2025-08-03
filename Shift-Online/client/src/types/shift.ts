@@ -5,4 +5,5 @@ export type Shift = {
   date: string;
   startTime: string;
   endTime: string;
+  userName?: string;
 };
