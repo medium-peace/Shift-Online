@@ -21,7 +21,7 @@ function App() {
           <ShiftList user={user} />
 
           {/* 新しく追加：シフト編集・削除機能 */}
-          <ShiftManagement />
+          <ShiftManagement user={user}/>
 
           {/* 管理者だけに表示されるユーザー管理 */}
           {user.role === 'admin' && <UserManagement />}
