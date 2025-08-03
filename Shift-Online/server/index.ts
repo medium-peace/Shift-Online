@@ -21,23 +21,12 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
-const SQLiteStore = SQLiteStoreFactory(session);
-
 app.use(session({
-  store: new SQLiteStore({
-    db: 'sessions.sqlite',
-    dir: './db',
-  }) as any,  // 型エラー回避のためanyキャスト（暫定対応）
   secret: 'your-secret-key',
   resave: false,
   saveUninitialized: false,
-  cookie: {
-    httpOnly: true,
-    secure: false,
-    sameSite: 'lax',
-  },
+  cookie: { secure: false }, // httpsでないならfalse
 }));
-
 
 
 // ルート
