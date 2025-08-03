@@ -6,7 +6,7 @@ const users = [
   { id: 2, username: 'user1', password: 'userpass', role: 'member' },
 ];
 
-const SECRET = process.env.JWT_SECRET!;
+const JWT_SECRET = process.env.JWT_SECRET!;
 
 export const login = (req: Request, res: Response) => {
   const { username, password } = req.body;
@@ -14,7 +14,7 @@ export const login = (req: Request, res: Response) => {
 
   if (!user) return res.status(401).json({ message: 'Invalid credentials' });
 
-  const token = jwt.sign({ id: user.id, role: user.role }, SECRET, { expiresIn: '1h' });
+  const token = jwt.sign({ id: user.id, role: user.role }, JWT_SECRET, { expiresIn: '1h' });
   res.cookie('token', token, {
     httpOnly: true,
     secure: false,

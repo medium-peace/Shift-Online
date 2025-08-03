@@ -9,6 +9,6 @@
     "rootDir": ".",
     "typeRoots": ["./types", "./node_modules/@types"]
   },
-  "include": ["**/*.ts", "db/init.js"],
+  "include": ["**/*.ts", "db/init.js","routes/**/*", "middleware/**/*", "types/**/*", "index.ts"],
   "exclude": ["node_modules"]
 }
