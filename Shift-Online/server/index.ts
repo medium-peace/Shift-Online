@@ -7,6 +7,7 @@ import cookieParser from 'cookie-parser';
 import authRoutes from './routes/authRoutes';
 import userRoutes from './routes/userRoutes';
 import shiftRoutes from './routes/shiftRoutes';
+import session from 'express-session';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -18,6 +19,18 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(cookieParser());
+
+app.use(session({
+  secret: 'your-secret-key',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: false, // httpsでのみクッキー送信（開発環境ではfalseにする）
+    httpOnly: true,
+    sameSite: 'lax',
+  }
+}));
+
 
 // ルート
 app.use('/api/auth', authRoutes);
