@@ -1,44 +1,40 @@
-// src/api/shiftApi.ts
+import { Shift } from '../types/shift'; // パスが正しいことを確認してください
 const API_URL = process.env.REACT_APP_API_BASE_URL;
 
-export async function login(name: string, password: string) {
-    const res = await fetch(`${API_URL}/api/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, password }),
-        credentials: 'include',
-    });
+export const login = async (name: string, password: string) => {
+  const res = await fetch('http://localhost:5000/api/auth/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include', // ← これを追加！
+    body: JSON.stringify({ name, password }),
+  });
 
-
-  if (!res.ok) {
-    throw new Error('ログイン失敗');
-  }
-
-  // 👇ユーザー情報を返す
-  return res.json();
-}
+  if (!res.ok) throw new Error('Login failed');
+  return await res.json();
+};
 
 export async function fetchShifts() {
   const res = await fetch(`${API_URL}`, { credentials: 'include' });
   return res.json();
 }
 
-export async function createShift(shift: { userId: number; date: string; startTime: string; endTime: string }) {
+export const createShift = async (shift: Shift): Promise<void> => {
   const res = await fetch('http://localhost:5000/api/shifts', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    credentials: 'include', // ←★ココが超重要
+    credentials: 'include', // ✅ セッションを含める
     body: JSON.stringify(shift),
   });
 
   if (!res.ok) {
-    throw new Error('シフト登録に失敗しました');
+    const error = await res.text();
+    throw new Error(error);
   }
-
-  return res.json();
-}
+};
 
 export async function updateShift(id: number, update: {
   date: string;
