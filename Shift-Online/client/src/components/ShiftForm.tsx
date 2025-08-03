@@ -17,10 +17,11 @@ export default function ShiftForm({ user }: ShiftFormProps) {
     e.preventDefault();
     try {
       await createShift({
-        userId: user.id,  // ← ここが重要
+        userId: user.id, // ← ここが重要
         date,
         startTime,
-        endTime
+        endTime,
+        id: 0
       });
       setMessage('シフトを登録しました！');
     } catch (err) {

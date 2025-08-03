@@ -1,7 +1,6 @@
 import { Shift } from '../types/shift'; // パスが正しいことを確認してください
 import { User } from '../types/user'
-const API_URL = process.env.REACT_APP_API_BASE_URL;
-
+const API_BASE = process.env.REACT_APP_API_BASE_URL ? process.env.REACT_APP_API_BASE_URL + '/api/shifts' : 'http://localhost:5000/api/shifts';
 
 export async function login(name: string, password: string): Promise<User> {
   const res = await fetch('/api/auth/login', {
@@ -22,27 +21,22 @@ export async function login(name: string, password: string): Promise<User> {
 }
 
 export const fetchShifts = async () => {
-  const res = await fetch('http://localhost:5000/api/shifts', {
-    credentials: 'include', // cookieを送るために必要
+  const res = await fetch(API_BASE, {
+    credentials: 'include',
   });
-
   if (!res.ok) {
     throw new Error(`Failed to fetch: ${res.status}`);
   }
-
   return await res.json();
 };
 
 export const createShift = async (shift: Shift): Promise<void> => {
-  const res = await fetch('http://localhost:5000/api/shifts', {
+  const res = await fetch(API_BASE, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include', // ✅ セッションを含める
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
     body: JSON.stringify(shift),
   });
-
   if (!res.ok) {
     const error = await res.text();
     throw new Error(error);
@@ -54,19 +48,25 @@ export async function updateShift(id: number, update: {
   startTime: string;
   endTime: string;
 }) {
-  const res = await fetch(`${API_URL}/${id}`, {
+  const res = await fetch(`${API_BASE}/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
     body: JSON.stringify(update),
   });
-  return res.json();
+  if (!res.ok) {
+    throw new Error(`Failed to update: ${res.status}`);
+  }
+  return await res.json();
 }
 
 export async function deleteShift(id: number) {
-  const res = await fetch(`${API_URL}/${id}`, {
+  const res = await fetch(`${API_BASE}/${id}`, {
     method: 'DELETE',
     credentials: 'include',
   });
-  return res.json();
+  if (!res.ok) {
+    throw new Error(`Failed to delete: ${res.status}`);
+  }
+  return await res.json();
 }

@@ -3,11 +3,11 @@ import LoginForm from './components/LoginForm';
 import ShiftForm from './components/ShiftForm';
 import ShiftList from './components/ShiftList';
 import UserManagement from './components/UserManagement';
+import ShiftManagement from './components/ShiftManagement';  // 追加
 
 function App() {
   const [user, setUser] = useState<any>(null);
 
-  // 🔍 ここでログ出力（毎回レンダリング時に表示されます）
   console.log("ログイン中のユーザー：", user);
 
   return (
@@ -16,9 +16,14 @@ function App() {
         <LoginForm onLogin={setUser} />
       ) : (
         <>
+          {/* 既存のシフトフォームとリスト */}
           <ShiftForm user={user} />
           <ShiftList user={user} />
-          {/* 🔒 管理者だけに表示される管理画面 */}
+
+          {/* 新しく追加：シフト編集・削除機能 */}
+          <ShiftManagement />
+
+          {/* 管理者だけに表示されるユーザー管理 */}
           {user.role === 'admin' && <UserManagement />}
         </>
       )}
@@ -27,3 +32,4 @@ function App() {
 }
 
 export default App;
+
