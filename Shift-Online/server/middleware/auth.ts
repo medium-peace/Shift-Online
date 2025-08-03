@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
-const SECRET = 'devsecret123';
+const SECRET = 'your-secret-key';
 
 export const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
   const token = req.cookies.token;
