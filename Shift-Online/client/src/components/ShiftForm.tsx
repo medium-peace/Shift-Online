@@ -30,6 +30,8 @@ export default function ShiftForm({ user }: ShiftFormProps) {
   };
 
   return (
+    <ul style={{ listStyleType: 'none', padding: 0 }}>
+    <div style={{ textAlign: 'center' }}>
     <form onSubmit={handleSubmit}>
       <h2>シフト登録</h2>
       <input type="date" value={date} onChange={e => setDate(e.target.value)} required />
@@ -38,5 +40,7 @@ export default function ShiftForm({ user }: ShiftFormProps) {
       <button type="submit">登録</button>
       <p>{message}</p>
     </form>
+    </div>
+    </ul>
   );
 }

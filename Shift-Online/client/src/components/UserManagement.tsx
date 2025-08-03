@@ -42,31 +42,31 @@ const UserManagement: React.FC = () => {
     loadUsers();
   }, []);
 
-  return (
+return (
+  <div style={{ textAlign: 'center' }}>
+    <h2>ユーザー管理</h2>
+    {error && <p style={{ color: 'red' }}>{error}</p>}
+
     <div>
-      <h2>ユーザー管理</h2>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-
-      <div>
-        <input value={name} onChange={(e) => setName(e.target.value)} placeholder="ユーザー名" />
-        <input value={password} onChange={(e) => setPassword(e.target.value)} placeholder="パスワード" type="password" />
-        <select value={role} onChange={(e) => setRole(e.target.value as 'admin' | 'user')}>
-          <option value="user">user</option>
-          <option value="admin">admin</option>
-        </select>
-        <button onClick={handleCreateUser}>追加</button>
-      </div>
-
-      <ul>
-        {users.map((u) => (
-          <li key={u.id}>
-            {u.username} ({u.role})
-            <button onClick={() => handleDeleteUser(u.id)}>削除</button>
-          </li>
-        ))}
-      </ul>
+      <input value={name} onChange={(e) => setName(e.target.value)} placeholder="ユーザー名" />
+      <input value={password} onChange={(e) => setPassword(e.target.value)} placeholder="パスワード" type="password" />
+      <select value={role} onChange={(e) => setRole(e.target.value as 'admin' | 'user')}>
+        <option value="user">user</option>
+        <option value="admin">admin</option>
+      </select>
+      <button onClick={handleCreateUser}>追加</button>
     </div>
-  );
-};
+
+    <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+      {users.map((u) => (
+        <li key={u.id}>
+          {u.username} ({u.role})
+          <button onClick={() => handleDeleteUser(u.id)}>削除</button>
+        </li>
+      ))}
+    </ul>
+  </div>
+);
+}
 
 export default UserManagement;
