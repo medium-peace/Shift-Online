@@ -1,13 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
 
 export const authenticate = (req: Request, res: Response, next: NextFunction) => {
+  console.log('セッションユーザ:', req.session.user);
   if (!req.session.user) {
     return res.status(401).json({ message: 'Unauthorized' });
   }
-
   (req as any).user = req.session.user;
   next();
 };
+
 
 export const requireRole = (role: string) => {
   return (req: Request, res: Response, next: NextFunction) => {
