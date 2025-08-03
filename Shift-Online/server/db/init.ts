@@ -2,15 +2,18 @@ import Database from 'better-sqlite3';
 
 const db = new Database('shift-online.db');
 
+// テーブル作成
 db.exec(`
   CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT NOT NULL UNIQUE,
+    name TEXT NOT NULL UNIQUE,
     password TEXT NOT NULL,
     role TEXT NOT NULL,
     contact TEXT
   );
+`);
 
+db.exec(`
   CREATE TABLE IF NOT EXISTS shifts (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     userId INTEGER NOT NULL,
@@ -21,14 +24,17 @@ db.exec(`
   );
 `);
 
-// ここを修正：prepareでステートメントを作ってからrunを呼ぶ
-const insert = db.prepare(`
-  INSERT INTO users (username, password, role)
+// ユーザー挿入（roleを含める）
+const insertUser = db.prepare(`
+  INSERT OR IGNORE INTO users (name, password, role)
   VALUES (?, ?, ?)
 `);
 
-// 例としてadminユーザーを挿入
-insert.run('admin', 'adminpass', 'admin');
+// 管理者ユーザーを作成
+insertUser.run('admin', 'adminpass', 'admin');
+
+// テストユーザーを作成
+insertUser.run('testuser', 'password123', 'user');
 
 console.log('Tables initialized.');
 
