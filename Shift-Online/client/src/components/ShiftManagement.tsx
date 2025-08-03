@@ -1,8 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { fetchShifts, updateShift, deleteShift } from '../api/shiftApi';
 import { Shift } from '../types/shift';
+import { User } from '../types/user';
 
-const ShiftManagement: React.FC = () => {
+type Props = {
+  user: User;
+};
+
+const ShiftManagement: React.FC<Props> = ({ user }) => {
   const [shifts, setShifts] = useState<Shift[]>([]);
   const [editingShift, setEditingShift] = useState<Shift | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -62,42 +67,43 @@ const handleUpdate = async () => {
     }
   };
 
-  return (
-    <div>
-      <h2>シフト管理</h2>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+return (
+  <div>
+    <h2>シフト管理</h2>
+    {error && <p style={{ color: 'red' }}>{error}</p>}
 
-      {editingShift ? (
-        <div>
-          <h3>シフト編集</h3>
-          <label>
-            日付: <input type="date" value={date} onChange={e => setDate(e.target.value)} />
-          </label>
-          <br />
-          <label>
-            開始時間: <input type="time" value={startTime} onChange={e => setStartTime(e.target.value)} />
-          </label>
-          <br />
-          <label>
-            終了時間: <input type="time" value={endTime} onChange={e => setEndTime(e.target.value)} />
-          </label>
-          <br />
-          <button onClick={handleUpdate}>更新</button>
-          <button onClick={cancelEdit}>キャンセル</button>
-        </div>
-      ) : (
-        <ul>
-          {shifts.map(shift => (
-            <li key={shift.id}>
-              {shift.userName} - {shift.date} {shift.startTime}〜{shift.endTime}{' '}
-              <button onClick={() => startEdit(shift)}>編集</button>
-              <button onClick={() => handleDelete(shift.id)}>削除</button>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
-};
+    {editingShift ? (
+      <div>
+        <h3>シフト編集</h3>
+        <label>
+          日付: <input type="date" value={date} onChange={e => setDate(e.target.value)} />
+        </label>
+        <br />
+        <label>
+          開始時間: <input type="time" value={startTime} onChange={e => setStartTime(e.target.value)} />
+        </label>
+        <br />
+        <label>
+          終了時間: <input type="time" value={endTime} onChange={e => setEndTime(e.target.value)} />
+        </label>
+        <br />
+        <button onClick={handleUpdate}>更新</button>
+        <button onClick={cancelEdit}>キャンセル</button>
+      </div>
+    ) : (
+      <ul>
+        {shifts.map(shift => (
+          <li key={shift.id}>
+            {/* 管理者ならユーザー名も表示 */}
+            {user.role === 'admin' && <>{shift.userName} - </>}
+            {shift.date} {shift.startTime}〜{shift.endTime}{' '}
+            <button onClick={() => startEdit(shift)}>編集</button>
+            <button onClick={() => handleDelete(shift.id)}>削除</button>
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
+);}
 
 export default ShiftManagement;

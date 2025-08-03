@@ -60,11 +60,13 @@ router.post('/', authenticate, (req, res) => {
 router.put('/:id', authenticate, (req, res) => {
   const id = req.params.id;
   const { date, startTime, endTime } = req.body;
-  const userId = req.user!.id;
+  const user = req.user as User;
 
   const shift = db.prepare('SELECT * FROM shifts WHERE id = ?').get(id) as Shift;
   if (!shift) return res.status(404).json({ message: 'Shift not found' });
-  if (shift.userId !== userId) return res.status(403).json({ message: 'Forbidden' });
+    if (user.role !== 'admin' && shift.userId !== user.id) {
+    return res.status(403).json({ message: 'Forbidden' });
+  }
 
   const stmt = db.prepare(
     'UPDATE shifts SET date = ?, startTime = ?, endTime = ? WHERE id = ?'
@@ -76,11 +78,13 @@ router.put('/:id', authenticate, (req, res) => {
 // シフト削除（本人のシフトか確認）
 router.delete('/:id', authenticate, (req, res) => {
   const id = req.params.id;
-  const userId = req.user!.id;
+  const user = req.user as User;
 
   const shift = db.prepare('SELECT * FROM shifts WHERE id = ?').get(id) as Shift;
   if (!shift) return res.status(404).json({ message: 'Shift not found' });
-  if (shift.userId !== userId) return res.status(403).json({ message: 'Forbidden' });
+  if (user.role !== 'admin' && shift.userId !== user.id) {
+    return res.status(403).json({ message: 'Forbidden' });
+  }
 
   const stmt = db.prepare('DELETE FROM shifts WHERE id = ?');
   const info = stmt.run(id);
