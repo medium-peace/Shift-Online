@@ -68,7 +68,7 @@ const handleUpdate = async () => {
   };
 
 return (
-  <div>
+  <div style={{ textAlign: 'center' }}>
     <h2>シフト管理</h2>
     {error && <p style={{ color: 'red' }}>{error}</p>}
 
@@ -91,10 +91,9 @@ return (
         <button onClick={cancelEdit}>キャンセル</button>
       </div>
     ) : (
-      <ul>
+      <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
         {shifts.map(shift => (
           <li key={shift.id}>
-            {/* 管理者ならユーザー名も表示 */}
             {user.role === 'admin' && <>{shift.userName} - </>}
             {shift.date} {shift.startTime}〜{shift.endTime}{' '}
             <button onClick={() => startEdit(shift)}>編集</button>
@@ -104,6 +103,7 @@ return (
       </ul>
     )}
   </div>
-);}
+);
+}
 
 export default ShiftManagement;

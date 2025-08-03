@@ -25,10 +25,10 @@ const ShiftList: React.FC<Props> = ({ user }) => {
   }, []);
 
   return (
-    <div>
+    <div style={{ textAlign: 'center' }}>
       <h2>登録済みシフト一覧</h2>
       {error && <p style={{ color: 'red' }}>{error}</p>}
-      <ul>
+      <ul style={{ listStyleType: 'none', padding: 0 }}>
         {shifts.map((shift) => (
           <li key={shift.id}>
             {shift.date} | {shift.startTime} - {shift.endTime}
