@@ -1,12 +1,6 @@
-// src/components/LoginForm.tsx
-
 import React, { useState } from 'react';
 import { login } from '../api/shiftApi';
-
-type User = {
-  id: number;
-  name: string;
-};
+import { User } from '../types/user'; // ✅ 共通のUser型を使う！
 
 type Props = {
   onLogin: (user: User) => void;
@@ -20,7 +14,8 @@ const LoginForm: React.FC<Props> = ({ onLogin }) => {
     e.preventDefault();
     try {
       const user = await login(name, password);
-      onLogin(user); // ✅ App.tsx に渡された関数を呼ぶ
+      console.log("ログイン成功:", user); // ← ✅ ここで role が出るか？
+      onLogin(user); // ✅ 正しくUser型として受け渡す
     } catch (err) {
       alert('ログインに失敗しました');
     }
@@ -36,3 +31,4 @@ const LoginForm: React.FC<Props> = ({ onLogin }) => {
 };
 
 export default LoginForm;
+

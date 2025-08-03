@@ -1,27 +1,33 @@
 import { Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
+import db from '../db/database';
 
-const users = [
-  { id: 1, username: 'admin', password: 'adminpass', role: 'admin' },
-  { id: 2, username: 'user1', password: 'userpass', role: 'member' },
-];
-
-const JWT_SECRET = process.env.JWT_SECRET!;
+type DBUser = {
+  id: number;
+  name: string;
+  role: 'admin' | 'user';
+};
 
 export const login = (req: Request, res: Response) => {
-  const { username, password } = req.body;
-  const user = users.find(u => u.username === username && u.password === password);
+  console.log("🔐 login 関数が呼ばれました");
 
-  if (!user) return res.status(401).json({ message: 'Invalid credentials' });
+  const { name, password } = req.body;
 
-  const token = jwt.sign({ id: user.id, role: user.role }, JWT_SECRET, { expiresIn: '1h' });
-  res.cookie('token', token, {
-    httpOnly: true,
-    secure: false,
-    sameSite: 'lax'
-  });
-  res.json({ message: 'Login successful', role: user.role });
+  const stmt = db.prepare('SELECT id, name, role FROM users WHERE name = ? AND password = ?');
+  const user = stmt.get(name, password) as DBUser | undefined;
+
+  console.log("SQLで取得したユーザー：", JSON.stringify(user));
+
+  if (user) {
+    res.json({
+      id: user.id,
+      name: user.name,
+      role: user.role ?? 'user',
+    });
+  } else {
+    res.status(401).json({ message: '認証失敗' });
+  }
 };
+
 
 export const logout = (_req: Request, res: Response) => {
   res.clearCookie('token');

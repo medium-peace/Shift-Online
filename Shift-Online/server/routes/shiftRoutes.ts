@@ -1,14 +1,47 @@
 import express from 'express';
 import db from '../db/database';
+import { User } from '../types/user'; // パスは適宜修正
 import { authenticate } from '../middleware/authMiddleware';
 import { Shift } from '../types/shift'; // パスは適宜調整
 
 const router = express.Router();
 
-// 全シフト取得（※必要でなければ管理者限定にするべき）
-router.get('/', authenticate, (req, res) => {
-  const shifts = db.prepare('SELECT * FROM shifts').all();
-  res.json(shifts);
+// GET /api/shifts
+router.get('/', async (req, res) => {
+  const user = req.session.user as unknown as User;
+
+  if (!user) {
+    return res.status(401).json({ message: 'Unauthorized' });
+  }
+
+  try {
+   let shifts;
+  // 例: SQLiteで結合クエリ
+if (user.role === 'admin') {
+  // 管理者はすべて取得（JOINでuser名も取得）
+  shifts = await db.prepare(`
+    SELECT shifts.*, users.name AS userName
+    FROM shifts
+    JOIN users ON shifts.userId = users.id
+  `).all();
+} else {
+  // メンバーは自分の分だけ
+  shifts = await db.prepare(`
+    SELECT shifts.*, users.name AS userName
+    FROM shifts
+    JOIN users ON shifts.userId = users.id
+    WHERE shifts.userId = ?
+  `).all(user.id);
+}
+
+
+
+
+    res.json(shifts);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
 });
 
 // シフト作成（JWTから userId を取得）
@@ -21,14 +54,6 @@ router.post('/', authenticate, (req, res) => {
   );
   const info = stmt.run(userId, date, startTime, endTime);
   res.status(201).json({ id: info.lastInsertRowid });
-});
-
-// ログインユーザーのシフト取得（他人のは取得不可）
-router.get('/my', authenticate, (req, res) => {
-  const userId = (req as any).user.id;
-  const stmt = db.prepare('SELECT * FROM shifts WHERE userId = ?');
-  const shifts = stmt.all(userId);
-  res.json(shifts);
 });
 
 // シフト更新（本人のシフトか確認）

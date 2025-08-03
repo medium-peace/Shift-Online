@@ -1,24 +1,37 @@
 import { Shift } from '../types/shift'; // パスが正しいことを確認してください
+import { User } from '../types/user'
 const API_URL = process.env.REACT_APP_API_BASE_URL;
 
-export const login = async (name: string, password: string) => {
-  const res = await fetch('http://localhost:5000/api/auth/login', {
+
+export async function login(name: string, password: string): Promise<User> {
+  const res = await fetch('/api/auth/login', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    credentials: 'include', // ← これを追加！
     body: JSON.stringify({ name, password }),
   });
 
-  if (!res.ok) throw new Error('Login failed');
+  if (!res.ok) {
+    throw new Error('Login failed');
+  }
+
+  const data = await res.json();
+  console.log("受信データ:", data);  // ← ここを追加
+  return data;  // ✅ ここで { id, name, role } を含んでいるか？
+}
+
+export const fetchShifts = async () => {
+  const res = await fetch('http://localhost:5000/api/shifts', {
+    credentials: 'include', // cookieを送るために必要
+  });
+
+  if (!res.ok) {
+    throw new Error(`Failed to fetch: ${res.status}`);
+  }
+
   return await res.json();
 };
-
-export async function fetchShifts() {
-  const res = await fetch(`${API_URL}`, { credentials: 'include' });
-  return res.json();
-}
 
 export const createShift = async (shift: Shift): Promise<void> => {
   const res = await fetch('http://localhost:5000/api/shifts', {
